@@ -1,0 +1,961 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Spoiler Club</title>
+<meta name="theme-color" content="#0b0b10" />
+
+<style>
+/* ============== TOKENS ============== */
+:root {
+  /* colori */
+  --page-bg:#0b0b10;
+  --nav-green:#0F5E4D;
+  --vision:#FC6C8F;
+  --location:#FEDD19;
+  --contatti:#78D0DB;
+
+  /* layout */
+  --maxw:1100px;
+
+  /* z-index (fondi sezioni) */
+  --z-footer:1;
+  --z-contatti:2;
+  --z-location:3;
+  --z-vision:4;
+  --z-hero:5;
+  --z-content:6;  /* testi/card sopra i fondi */
+  --z-navbar:7;   /* wave + fondo navbar */
+}
+
+/* ============== BASE ============== */
+* {
+  box-sizing:border-box;
+}
+
+html {
+  scroll-behavior:smooth;
+}
+
+body {
+  margin:0;
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;
+  background: radial-gradient(1000px 600px at 80% -10%, #141424 0%, transparent 60%), var(--page-bg);
+  color:#fff;
+}
+
+.wrap {
+  max-width:var(--maxw);
+  margin-inline:auto;
+  padding:0 20px;
+}
+
+a {
+  color:inherit;
+  text-decoration:none;
+}
+
+/* ============== NAVBAR con ONDA (no seam) ============== */
+header {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-navbar);
+  color: #fff;
+  /* spazio interno inferiore */
+  padding: 0 24px 24px;
+  /* backdrop-filter: blur(10px); */
+  overflow: visible;
+}
+
+header .bar {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:30px 0;
+  position:relative;
+  z-index:1; /* link/logo sopra */
+}
+
+/* Sfondo unico: rettangolo + onda integrata in un solo SVG come background */
+header::after {
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  top:0;
+  bottom:-16px;  /* estende leggermente l'onda verso il basso */
+  z-index:0;
+  pointer-events:none;
+  background-repeat:no-repeat;
+  background-position: center top;
+  background-size: 100% 100%;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 220' preserveAspectRatio='none'><path fill='%230F5E4D' d='M0,0 H1440 V170 C1200,140 900,205 600,170 C300,140 120,190 0,160 Z'/></svg>");
+}
+
+/* --- NAV: brand, logo, menu, buttons --- */
+.brand {
+  display:flex;
+  align-items:center;
+  gap:12px;
+  font-weight:700;
+  letter-spacing:.2px;
+  text-decoration:none;
+  color:#fff;
+}
+
+.brand .logo {
+  width:64px;
+  height:64px;
+  display:block;
+  border-radius:0;
+  /* overflow:hidden; */
+}
+
+.brand .logo img {
+  display:block;
+  width:100%;
+  height:auto;
+}
+
+.brand .name {
+  font-size:1.05rem;
+}
+
+.menu {
+  display:flex;
+  align-items:center;
+  gap:18px;
+}
+
+.btn {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:16px 20px;
+  border-radius:12px;
+  font-weight:600;
+  border:1px solid transparent;
+  cursor:pointer;
+  line-height:1;
+  text-decoration:none;
+}
+
+
+.btn-ghost {
+  background: rgba(255,255,255,.10);
+  border-color: rgba(255,255,255,.22);
+  color:#fff;
+}
+
+.btn-ghost:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(0,0,0,.25);
+}
+
+/* Ghost su card chiara (Location): testo grigio scuro e migliore contrasto */
+.loc-text .cta .btn-ghost {
+  background: rgba(0,0,0,.06);
+  border-color: rgba(0,0,0,.18);
+  color: #222;
+}
+
+.loc-text .cta .btn-ghost:hover {
+  background: rgba(0,0,0,.10);
+  box-shadow: 0 8px 18px rgba(0,0,0,.12);
+}
+
+/* Bottone primario (riempito blu) */
+.btn-primary {
+  background: #1402F1;
+  color: #ffffff;
+  border: none;
+}
+
+.btn-primary:hover {
+  background: #0d00b8;
+  color: #ffffff;
+}
+
+/* Rendi il bottone del form a tutta larghezza come i campi */
+.contact-card--dark .actions .btn {
+  width: 100%;
+  justify-content: center;
+}
+
+/* ============== SEZIONI + ONDE ============== */
+/* struttura base: ogni sezione ha il suo colore; l’onda sta dietro ai contenuti */
+section {
+  position:relative;
+  padding:56px 0;
+  scroll-margin-top:80px;
+}
+
+section .content {
+  position:relative;
+  z-index:var(--z-content);
+}
+
+/* hero (fondo scuro della pagina) */
+.hero {
+  z-index:var(--z-hero);
+  background:transparent;
+}
+
+/* vision/location/contatti: fondi pieni */
+#vision {
+  z-index:var(--z-vision);
+  background:var(--vision);
+}
+
+#location {
+  z-index:var(--z-location);
+  background:var(--location);
+}
+
+#contatti {
+  z-index:var(--z-contatti);
+  background:var(--contatti);
+}
+
+/* footer */
+footer {
+  position:relative;
+  z-index:var(--z-footer);
+  background:var(--page-bg);
+  color:#b7b7c7;
+  padding:40px 0 80px;
+  text-align:center;
+  font-size:.9rem;
+}
+
+/* onde ALTE (intersezione): disegnate come ::before della sezione che ARRIVA */
+.section-wave {
+  overflow:visible;
+  padding-top:240px;
+}
+
+/* spazio per far “entrare” l’onda */
+.section-wave::before {
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  top:-1px;
+  height:200px;
+  background-repeat:no-repeat;
+  background-size:150% 115%;
+  background-position:center top;
+  z-index:0;
+   /* dietro ai contenuti */
+  pointer-events:none;
+}
+
+/* spingi i contenuti dentro la curva (ma restano davanti) */
+.section-wave .content {
+  margin-top:-160px;
+}
+
+/* forme specifiche (riempiamo col colore della SEZIONE PRECEDENTE) */
+/* Vision: riempita con lo sfondo della pagina (scuro) */
+#vision.section-wave::before {
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 200' preserveAspectRatio='none'><path fill='%230b0b10' d='M0,0 L0,40 C180,0 360,180 600,60 C840,-40 1080,200 1320,100 C1380,80 1410,140 1440,180 L1440,0 Z'/></svg>");
+}
+
+/* Location: riempita con rosa di Vision (incastro) */
+#location.section-wave::before {
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 200' preserveAspectRatio='none'><path fill='%23FC6C8F' d='M0,0 L0,50 C160,140 400,20 720,120 C980,200 1180,40 1440,160 L1440,0 Z'/></svg>");
+}
+
+/* Contatti: riempita con giallo di Location (sinistra molto bassa, picco a destra) */
+#contatti.section-wave::before {
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 200' preserveAspectRatio='none'><path fill='%23FEDD19' d='M0,0 L0,140 C320,100 700,60 1000,40 C1200,20 1340,180 1440,160 L1440,0 Z'/></svg>");
+}
+
+/* Onda del FOOTER: bordo superiore decorativo che non copre il testo */
+footer::before {
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  top:0;
+  height:100px;
+  background-repeat:no-repeat;
+  background-size:120% 100%;
+  background-position:center top;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 200' preserveAspectRatio='none'><path fill='%2378D0DB' d='M0,0 L0,30 C240,150 420,20 720,120 C960,200 1180,60 1440,100 L1440,0 Z'/></svg>");
+  pointer-events:none;
+  z-index:0;
+}
+
+footer .content {
+  position:relative;
+  z-index:1;
+  padding-top:40px;
+}
+
+/* ============== HERO ============== */
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  align-items: center;
+  gap: 40px;
+  padding-top: 40px;
+}
+
+.hero-text h1 {
+  font-size: 2.4rem;
+  line-height: 1.2;
+  margin-bottom: 16px;
+}
+
+.hero-text .lead {
+  font-size: 1.1rem;
+  color: #ccc;
+  margin-bottom: 28px;
+  max-width: 520px;
+}
+
+.hero-img img {
+  width: 100%;
+  max-width: 600px;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+  display: block;
+  margin: 0 auto;
+}
+
+.vision-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+/* card quadrata */
+.vision-card {
+  position: relative;
+  aspect-ratio: 1 / 1;            /* quadrata */
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--c, #333);
+  box-shadow: 0 10px 24px rgba(0,0,0,.18);
+  border: 1px solid rgba(0,0,0,.1);
+  cursor: default;
+}
+
+.vision-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0);
+  transition: background .25s ease;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* --- VISION CARD Nuova struttura --- */
+.vision-card .vc-center {
+  position: relative;
+  z-index: 2;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  text-align: center;
+  transition: padding .48s cubic-bezier(.2,.8,.2,1);
+}
+.vision-card .vc-center h3 {
+  margin: 0;
+  font-size: 1.3rem;
+  color: #fff;
+  text-shadow: 0 2px 6px rgba(0,0,0,.35);
+  transition: transform .48s cubic-bezier(.2,.8,.2,1), opacity .48s cubic-bezier(.2,.8,.2,1);
+}
+.vision-card:hover .vc-center,
+.vision-card.is-open .vc-center {
+  align-items: flex-start;     /* spinge in alto (verticale) */
+  justify-content: center;     /* resta centrato orizzontalmente */
+  padding: 28px 16px 0;        /* ancora un filo di spazio dal bordo superiore */
+}
+
+.vision-card:hover .vc-center h3,
+.vision-card.is-open .vc-center h3 {
+  transform: scale(1.02) translateY(-4px);
+  transform-origin: top center;
+}
+.vision-card .vc-panel {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  background: rgba(250,250,252,.96);
+  color: #111;
+  border-radius: 14px;
+  box-shadow: 0 10px 24px rgba(0,0,0,.18);
+  padding: 16px;
+  z-index: 2;
+  transform: translateY(110%);
+  opacity: 0;
+  transition: transform .40s cubic-bezier(.2,.7,.2,1), opacity .40s cubic-bezier(.2,.7,.2,1);
+}
+.vision-card .vc-panel .vc-desc {
+  margin: 0;
+  color: #333;
+}
+.vision-card:hover::after,
+.vision-card.is-open::after {
+  background: rgba(0,0,0,.06);
+}
+.vision-card:hover .vc-panel,
+.vision-card.is-open .vc-panel {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* Hint “Tocca” (mobile only) */
+.vc-hint {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 10px;
+  z-index: 3;
+  text-align: center;
+  font-size: .95rem;
+  color: rgba(255,255,255,.95);
+  text-shadow: 0 2px 6px rgba(0,0,0,.35);
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity .35s ease, transform .35s ease;
+  pointer-events: none;
+}
+/* mostra l'hint quando la card è chiusa */
+.vision-card:not(.is-open) .vc-hint {
+  opacity: 0.9;
+  transform: translateY(0);
+}
+/* nascondi l'hint quando la card è aperta */
+.vision-card.is-open .vc-hint {
+  opacity: 0;
+  transform: translateY(8px);
+}
+@media (min-width: 901px) {
+  /* su desktop niente hint */
+  .vc-hint { display: none; }
+}
+
+/* === LOCATION: 2 colonne (testo + gallery) === */
+.location-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  align-items: stretch;
+}
+
+/* card di base */
+.location-grid .card {
+  background: #fff;
+  border: 1px solid rgba(0,0,0,.1);
+  border-radius: 16px;
+  box-shadow: 0 10px 20px rgba(0,0,0,.15);
+  padding: 28px;
+  color: #000;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* testo e lista */
+.loc-text h3 {
+  margin-top: 0;
+  font-size: 1.4rem;
+  margin-bottom: 16px;
+}
+
+.loc-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 24px;
+  display: grid;
+  gap: 8px;
+}
+
+.loc-list li::before {
+  content: "•";
+  color: #0F5E4D;
+  font-weight: bold;
+  margin-right: 8px;
+}
+
+/* pulsante */
+.loc-text .cta {
+  margin-top: auto;   /* spinge il bottone in basso nella card */
+  padding-top: 16px;  /* mantiene respiro sopra al bottone */
+}
+
+/* gallery */
+.loc-gallery h3 {
+  margin-top: 0;
+  font-size: 1.4rem;
+  margin-bottom: 16px;
+}
+
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+.gallery img {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid rgba(0,0,0,.1);
+  box-shadow: 0 5px 10px rgba(0,0,0,.1);
+}
+
+
+/* === CONTATTI: 2 colonne (form scuro + info chiare) === */
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  align-items: stretch;
+}
+
+.contact-card {
+  border-radius: 16px;
+  box-shadow: 0 10px 20px rgba(0,0,0,.15);
+  border: 1px solid rgba(0,0,0,.1);
+  padding: 28px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.contact-card--dark {
+  background: #12121a;
+  color: #eaeaf2;
+  border-color: #ffffff22;
+}
+
+.contact-card--light {
+  background: #ffffff;
+  color: #000000;
+}
+
+/* Form fields dentro la card scura */
+.contact-card--dark .field {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.contact-card--dark label {
+  font-weight: 600;
+  color: #eaeaf2;
+  font-size: .95rem;
+}
+
+.contact-card--dark input,
+.contact-card--dark textarea {
+  width: 100%;
+  background: #0f0f17;
+  border: 1px solid #ffffff22;
+  border-radius: 12px;
+  color: #eaeaf2;
+  padding: 12px 14px;
+  font: inherit;
+}
+
+.contact-card--dark input:focus,
+.contact-card--dark textarea:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px #1b5e2055; /* ring soft */
+  border-color: #1b5e20;
+}
+
+.contact-card--dark textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.contact-card--dark .actions {
+  margin-top: auto;           /* spinge il bottone in basso */
+  padding-top: 12px;
+}
+
+/* Card info chiare */
+.contact-card--light h3 {
+  margin: 0 0 10px;
+  font-size: 1.3rem;
+  color: #000;
+}
+
+.contact-card--light p {
+  margin: 0 0 10px;
+  color: #222;
+}
+
+.contact-info a {
+  color: #000;
+  text-decoration: underline;
+}
+
+.contact-logo {
+  margin-top: auto;           /* logo in basso alla card */
+  text-align: center;
+  opacity: 0.9;
+}
+
+.contact-logo img {
+  width: 140px;
+  height: auto;
+  display: inline-block;
+}
+
+/* === MOBILE (Contatti) === */
+@media (max-width: 900px) {
+  .contact-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  /* Mantieni il form prima dell'info su mobile */
+  .contact-card--dark {
+    order: 1;
+  }
+
+  .contact-card--light {
+    order: 2;
+  }
+}
+
+/* === HOVER MOTION per tutte le card (eccetto il form scuro) === */
+/* transizione morbida */
+.vision-card,
+.location-grid .card,
+.contact-card {
+  transition: transform .25s ease, box-shadow .25s ease;
+  will-change: transform;
+}
+
+/* sollevamento leggero al passaggio del mouse */
+.vision-card:hover,
+.location-grid .card:hover,
+.contact-card:not(.contact-card--dark):hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0,0,0,.20);
+}
+
+/* opzionale: feedback da tastiera (accessibilità) */
+.vision-card:focus-visible,
+.location-grid .card:focus-visible,
+.contact-card:not(.contact-card--dark):focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 22px rgba(0,0,0,.18);
+  outline: 2px solid rgba(20, 2, 241, .5);
+  outline-offset: 3px;
+}
+
+/* ============== MOBILE ============== */
+@media (max-width:900px) {
+  header {
+    padding: 0 16px 18px;
+  }
+
+  .brand .logo {
+    width:48px;
+    height:48px;
+  }
+
+  .menu {
+    gap:14px;
+  }
+
+  .btn {
+    padding:15px 18px;
+    border-radius:11px;
+  }
+
+  /* onde meno aggressive su mobile (facile da ritoccare) */
+  .section-wave {
+    padding-top:180px;
+  }
+
+  .section-wave::before {
+    height:140px;
+  }
+
+  .section-wave .content {
+    margin-top:-110px;
+  }
+
+/* ============== HERO ============== */
+
+  .hero-grid {
+    grid-template-columns: 1fr;
+    text-align: center;
+    gap: 28px;
+    padding-top: 20px;
+  }
+
+  .hero-text .lead {
+    margin-inline: auto;
+  }
+
+  .hero-img img {
+    width: 70%;
+    max-width: 400px;
+  }
+
+/* ============== VISION ============== */
+
+  .vision-grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+/* ============== LOCATION ============== */
+
+  .location-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  /* Mantieni la colonna testo prima della gallery */
+  .loc-text {
+    order: 1;
+  }
+
+  .loc-gallery {
+    order: 2;
+  }
+
+  .gallery {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+</style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <header>
+    <div class="wrap bar">
+      <a class="brand" href="#home">
+        <span class="logo"><img src="img/logo.png" alt="Spoiler Club logo"></span>
+        <span class="name">Spoiler Club</span>
+      </a>
+      <nav class="menu">
+        <a href="#vision">Vision</a>
+        <a href="#location">Location</a>
+        <a href="#contatti" class="btn btn-ghost">Prenota</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- HERO (2 colonne: la riempiamo nello step 2) -->
+    <section class="hero">
+      <div class="wrap content">
+        <section class="hero">
+          <div class="wrap content hero-grid">
+            <div class="hero-text">
+              <h1>Nulla di straordinario si improvvisa.</h1>
+              <p class="lead">
+                Spoiler è un collettivo di professionisti che realizza contenuti audio-video a 360°. 
+                Riprese, montaggi, color, editing audio, mix & mastering. 
+                Un laboratorio creativo dove la tecnica incontra la passione.
+              </p>
+              <a class="btn btn-primary" href="#contatti">Parla con noi</a>
+            </div>
+            <div class="hero-img">
+              <img src="img/loft.jpg" alt="Il nostro spazio creativo luminoso con stile loft americano">
+            </div>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <!-- VISION (3 card quadrate) -->
+    <section id="vision" class="section-wave">
+      <div class="wrap content">
+        <div class="wrap content vision-grid">
+          <article class="vision-card" style="--c:#F0C400">
+            <div class="vc-center">
+              <h3>Esperienza & Innovazione</h3>
+            </div>
+            <div class="vc-hint">👆 Tocca</div>
+            <div class="vc-panel">
+              <p class="vc-desc">In Spoiler, la tecnica è la nostra lingua madre, ma è la creatività che rende ogni progetto unico. Lavoriamo con passione e precisione per realizzare contenuti che raccontano storie memorabili, supportati dalla nostra expertise e dalla continua ricerca di nuove soluzioni.</p>
+            </div>
+          </article>
+
+          <article class="vision-card" style="--c:#0F5E4D">
+            <div class="vc-center">
+              <h3>Club esclusivo</h3>
+            </div>
+            <div class="vc-hint">👆 Tocca</div>
+            <div class="vc-panel">
+              <p class="vc-desc">Spoiler è più di una società di produzione: è un club esclusivo, un laboratorio creativo dove l'innovazione e l'eccellenza sono la norma. Vogliamo che chi lavora con noi non si senta solo parte di un progetto, ma di una realtà che sa come combinare professionalità, creatività e visione.</p>
+            </div>
+          </article>
+
+          <article class="vision-card" style="--c:#49B6C4">
+            <div class="vc-center">
+              <h3>Legami autentici</h3>
+            </div>
+            <div class="vc-hint">👆 Tocca</div>
+            <div class="vc-panel">
+              <p class="vc-desc">Il Nostro approccio non è solo tecnico, ma anche umano. Vogliamo costruire un legame autentico con i nostri clienti e collaboratori, creando contenuti che rappresentino veramente la loro essenza e la loro visione, con un linguaggio visivo che parla al cuore del pubblico.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- LOCATION (2 colonne: testo+cta / gallery) -->
+    <section id="location" class="section-wave">
+      <div class="wrap content">
+        <div class="wrap content location-grid">
+          <div class="loc-text card">
+            <h3>Perché scegliere il nostro spazio</h3>
+            <ul class="loc-list">
+              <li>Setup podcast completo: microfoni, mixer, cuffie</li>
+              <li>Limbo nero / verde / bianco per foto & reel</li>
+              <li>Grande tavolone per riunioni & team</li>
+              <li>Angolo dedicato a mix & mastering</li>
+              <li>Eventi privati fino a 50 persone</li>
+            </ul>
+            <div class="cta">
+              <a class="btn btn-ghost" href="docs/scheda-tecnica.pdf" download>📄 Scarica la locandina / scheda tecnica</a>
+            </div>
+          </div>
+
+          <div class="loc-gallery card">
+            <h3>Uno sguardo</h3>
+            <div class="gallery">
+              <img src="img/gallery-1.jpg" alt="Finestroni e luce naturale" loading="lazy">
+              <img src="img/gallery-2.jpg" alt="Zona podcast allestita" loading="lazy">
+              <img src="img/gallery-3.jpg" alt="Limbo fotografico" loading="lazy">
+              <img src="img/gallery-4.jpg" alt="Tavolone riunioni" loading="lazy">
+              <img src="img/gallery-5.jpg" alt="Spazio eventi" loading="lazy">
+              <img src="img/gallery-6.jpg" alt="Angolo mix/master" loading="lazy">
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTATTI (2 colonne: form scuro / info+logo) -->
+    <section id="contatti" class="section-wave">
+      <div class="wrap content contact-grid">
+
+        <!-- Card form scura -->
+        <form class="contact-card contact-card--dark" id="contact-form" action="https://formspree.io/f/SEGNAPOSTO" method="POST" novalidate>
+          <div class="field">
+            <label for="name">Nome</label>
+            <input id="name" name="name" type="text" autocomplete="name" required placeholder="Il tuo nome">
+          </div>
+          <div class="field">
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" inputmode="email" autocomplete="email" required placeholder="nome@esempio.it">
+          </div>
+          <div class="field">
+            <label for="message">Messaggio</label>
+            <textarea id="message" name="message" required placeholder="Parlaci della tua richiesta (podcast, evento, riprese…)"></textarea>
+          </div>
+          <!-- Honeypot anti-spam -->
+          <input type="text" name="_gotcha" style="display:none" tabindex="-1" autocomplete="off">
+          <div class="actions">
+            <button class="btn btn-primary" type="submit">Invia</button>
+          </div>
+        </form>
+
+        <!-- Card info chiara -->
+        <div class="contact-card contact-card--light">
+          <h3>Info</h3>
+          <div class="contact-info">
+            <p><strong>Email</strong>: <a href="mailto:info@spoiler.club">info@spoiler.club</a></p>
+            <p><strong>Instagram</strong>: <a href="https://www.instagram.com/thespoilerclub">@thespoilerclub</a></p>
+            <p><strong>WhatsApp</strong>: <a href="https://wa.me/393465769813">+39 346 57 69 813</a></p>
+            <p>Spazio a Monza, via Magenta 9.<br>Sessioni e sopralluoghi su appuntamento.</p>
+          </div>
+          <div class="contact-logo">
+            <img src="img/logo 2.png" alt="Spoiler Club logo">
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="wrap content">
+      <small>© <span id="y"></span> Spoiler Club — Tutti i diritti riservati</small>
+    </div>
+  </footer>
+
+<script>
+  // Anno nel footer
+  document.getElementById('y').textContent = new Date().getFullYear();
+
+  // Vision cards: tap/click per mostrare la descrizione su mobile/desktop
+  (function () {
+    var cards = document.querySelectorAll('.vision-card');
+    if (!cards.length) return;
+
+    cards.forEach(function(card){
+      card.setAttribute('tabindex','0');
+      card.addEventListener('click', function(){
+        var alreadyOpen = card.classList.contains('is-open');
+        // chiudi tutte le altre
+        document.querySelectorAll('.vision-card.is-open').forEach(function(c){
+          if (c !== card) c.classList.remove('is-open');
+        });
+        // apri/chiudi quella cliccata
+        if (alreadyOpen) {
+          card.classList.remove('is-open');
+        } else {
+          card.classList.add('is-open');
+        }
+      });
+      card.addEventListener('keyup', function(e){
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          var alreadyOpen = card.classList.contains('is-open');
+          document.querySelectorAll('.vision-card.is-open').forEach(function(c){
+            if (c !== card) c.classList.remove('is-open');
+          });
+          if (alreadyOpen) {
+            card.classList.remove('is-open');
+          } else {
+            card.classList.add('is-open');
+          }
+        }
+      });
+      // Nascondi l'hint alla prima interazione (e resta nascosto)
+      card.addEventListener('click', function(){
+        var h = card.querySelector('.vc-hint');
+        if (h) { h.style.opacity = '0'; h.style.transform = 'translateY(8px)'; }
+      }, { once: true });
+    });
+
+    // Chiudi quando clicchi fuori da una card
+    document.addEventListener('click', function(e){
+      var inside = e.target.closest && e.target.closest('.vision-card');
+      if (!inside) {
+        document.querySelectorAll('.vision-card.is-open').forEach(function(c){
+          c.classList.remove('is-open');
+        });
+      }
+    });
+  })();
+</script>
+</body>
+</html>
